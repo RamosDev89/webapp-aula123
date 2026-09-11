@@ -1,3 +1,2 @@
 fastapi
 psycopg[binary]
-uvicorn

@@ -17,6 +17,12 @@ jobs:
       - name: Instalar Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Instalar uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Adicionar uv ao PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Puxar configuração de produção
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
