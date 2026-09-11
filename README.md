@@ -1,6 +1,6 @@
 # webapp-aula123
 
-API de Tarefas com FastAPI + Neon Postgres, deploy contínuo via GitHub Actions → Vercel.
+API de Tarefas com FastAPI + Neon Postgres, deploy contínuo via GitHub Actions → Vercel (Docker via `Dockerfile.vercel`).
 
 ---
 
@@ -114,3 +114,28 @@ Abrir `http://localhost:8000`.
 - **`.vercel` no `.gitignore`**: a pasta `.vercel/` contém IDs locais do projeto e não deve ser commitada.
 - **Esgotamento de conexões**: usar a connection string sem `-pooler` no host abre conexões diretas ao Postgres, que têm limite baixo no plano gratuito do Neon. Sempre usar a string pooled.
 - **Database `neondb` vs `appdb`**: o Neon cria o database `neondb` por padrão. O `appdb` precisa ser criado manualmente no SQL Editor do Neon, e a `DATABASE_URL` gerada pela integração Vercel precisa ser editada para apontar para `appdb`.
+
+---
+
+## Deploy via Docker
+
+A partir de junho de 2026, a Vercel suporta `Dockerfile.vercel` nativamente: ela builda a imagem, armazena no Vercel Container Registry e roda em Fluid compute. O projeto `webapp-aula123` migrou para esse modo — **mesmo projeto, mesma URL, mesmo banco** — só o modo de build mudou.
+
+**Por que migrar**: runtime Python nativo da Vercel tem limitações de dependências nativas (como `psycopg[binary]`). Docker resolve isso e dá controle total do ambiente.
+
+**Testar localmente antes do push:**
+
+```bash
+# build
+docker build -f Dockerfile.vercel -t webapp-aula123 .
+
+# rodar (substituir <url> pela DATABASE_URL real do Neon)
+docker run -e DATABASE_URL="<url>" -e PORT=8080 -p 8080:8080 webapp-aula123
+```
+
+Abrir `http://localhost:8080/api/health` para confirmar.
+
+**Notas importantes:**
+- `PORT` é injetada automaticamente pela Vercel em produção — não fixar valor no código nem no `CMD` do Dockerfile.
+- A `DATABASE_URL` continua injetada pela integração Neon, sem nenhuma mudança de configuração no projeto Vercel.
+- O workflow do GitHub Actions (`deploy.yml`) detecta o `Dockerfile.vercel` automaticamente — nenhuma flag adicional é necessária nos comandos `vercel build` / `vercel deploy`.

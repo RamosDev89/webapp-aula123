@@ -1,0 +1,9 @@
+.git
+.github
+.vercel
+.env
+__pycache__
+*.pyc
+venv/
+README.md
+schema.sql

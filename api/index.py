@@ -39,7 +39,7 @@ HTML = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <h1>Lista de Tarefas!</h1>
+  <h1>Lista de Tarefas 123!</h1>
   <div id="form">
     <input id="novo" type="text" placeholder="Nova tarefa…" />
     <button onclick="criar()">Adicionar</button>
